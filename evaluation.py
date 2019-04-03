@@ -17,18 +17,18 @@ import movies # Python library containing movie keyword identification
 import tweets # Python library containing preprocessed Twitter data.
 
 
-def indexDocument(tweet, invertedIndex): 
+def indexMovies(movie, invertedIndex): 
 	"""
-	Adds tweet tokens to inverted index passed in as input (invertedIndex).
+	Adds movie tokens to inverted index passed in as input (invertedIndex).
 	Return: Additional entry in inverted index data structure (passed in as
 			input).
 	"""
 
-	# TODO: ADD TWEETID INFO HERE 
+	# TODO: ADD MOVIEID INFO HERE 
 	# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	# Find term frequency of each token in tweet tokens list.
-	termFreq = collections.Counter(tweet)
+	# Find term frequency of each token in movie tokens list.
+	termFreq = collections.Counter(movie)
 	termFreq = dict(termFreq)
 
 	# Add all tokens and term frequencies to invertedIndex, updating the inverted
@@ -38,7 +38,7 @@ def indexDocument(tweet, invertedIndex):
 		# If the token already exists in the inverted index, then add to the
 		# index. Otherwise, create a new entry in the dictionary.
 		if token in invertedIndex:
-			invertedIndex[token][1][tweetID] = termFreq[token]
+			invertedIndex[token][1][movieID] = termFreq[token]
 			invertedIndex[token][0] += 1
 		else:
 
@@ -53,7 +53,7 @@ def indexDocument(tweet, invertedIndex):
 			invertedIndex[token].append(1) # document frequency
 			invertedIndex[token].append({}) # empty dictionary for the actual	
 											# inverted index
-			invertedIndex[token][1][tweetID] = termFreq[token]
+			invertedIndex[token][1][movieID] = termFreq[token]
 
 			# For keeping track of the number of documents in the collection.
 			invertedIndex[token].append(0)
