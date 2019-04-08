@@ -1,6 +1,17 @@
-import json
+import json, re, string
+import arrow
+
+from nltk.tokenize import TweetTokenizer, MWETokenizer
+tweettk = TweetTokenizer()
+mwetk = MWETokenizer()
+
+import nltk.corpus as corpus
+stop_words = set(corpus.stopwords.words('english'))
+
 import tweepy
 from tweepy import OAuthHandler
+
+from tweet_parser import parseTweetBasic, parseUserBasic
 
 # curtis1227 keys
 consumer_key = '60MxomUk4bQx0nkbZFLPTzIFb'
@@ -13,55 +24,22 @@ auth.set_access_token(access_token, access_secret)
 
 api = tweepy.API(auth, wait_on_rate_limit=True)
 
-def parseUser(u):
-    new_u = { key: u[key] for key in [
-        'created_at',
-        'description',
-        'entities',
-        'favourites_count',
-        'followers_count',
-        'friends_count',
-        'id',
-        'id_str',
-        'lang',
-        'listed_count',
-        'location',
-        'name',
-        'screen_name',
-        'statuses_count',
-        'url'
-        ]
-    }
-    return new_u
-
-def parseTweet(s):
-    new_s = { key: s[key] for key in [
-        'created_at',
-        'entities',
-        'favorite_count',
-        'id',
-        'id_str',
-        'lang',
-        'metadata',
-        'text',
-        'source'
-        ]
-    }
-    new_s['user'] = parseUser(s['user'])
-    return new_s
-
 def retrieveTweets():
     tweets = []
-    query = '#movie'
-    limit = 100
+    query = 'movie'
+    limit = 150
     # Maybe use random words for query?
-    with open('tweets.json', 'w') as file:
+
+    local = arrow.now('US/Eastern')
+    local = local.format('YYYY-MM-DD-HH-mm')
+    with open('tweets{}.json'.format(local), 'w') as file:
+        file.write('[')
         for i, tweet in enumerate(tweepy.Cursor(api.search, q=query, result_type='recent').items(limit)):
-                processed_tweet = parseTweet(tweet._json)
-                print(i, processed_tweet)
+                processed_tweet = parseTweetBasic(tweet._json)
                 tweets.append(processed_tweet)
                 json.dump(processed_tweet, file, sort_keys=True, indent=2)
                 file.write(',\n')
+        file.write('{}]\n')
     return tweets
 
 # tweets = retrieveTweets()
@@ -69,5 +47,10 @@ tweets = {}
 with open('tweets.json', 'r') as file:
     tweets = json.load(file)
 
-for tweet in tweets:
-    print(tweet['text'])
+with open('test.txt', 'w') as file:
+    for tweet in tweets:
+        text = tweettk.tokenize(tweet['text'])
+        # Remove stopwords
+        # text = [token for token in text if token not in stop_words]
+        file.write(str(text) + '\n')
+        # print(json.dumps(tweet, indent=2))
