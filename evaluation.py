@@ -12,13 +12,13 @@ NOTE: This program runs with Python 3.7.
 
 import collections
 import json
-import movies # Python library containing movie keyword identification 
-			  # and preprocessing.
 import os
-import tweets # Python library containing preprocessed Twitter data.
 
 from math import log10, sqrt
 from textblob import TextBlob
+# To use the TextBlob library on CAEN, we will need to run the following 
+# command:
+# `pip install --user textblob`.
 
 
 def indexMovies(movie, invertedIndex): 
@@ -28,11 +28,14 @@ def indexMovies(movie, invertedIndex):
 			input).
 	"""
 
-	# TODO: ADD MOVIEID INFO HERE 
-	# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	# Get ID for movie.
+	movieID = movie['id']
 
-	# Find term frequency of each token in movie tokens list.
-	termFreq = collections.Counter(movie)
+	# Find term frequency of each token in movie tokens list. The tokens list
+	# contains both the genre and keyword lists.
+	for genre in movie['genre_list']:
+		movie['keyword_list'].append(genre)
+	termFreq = collections.Counter(movie['keyword_list'])
 	termFreq = dict(termFreq)
 
 	# Add all tokens and term frequencies to invertedIndex, updating the inverted
@@ -50,6 +53,9 @@ def indexMovies(movie, invertedIndex):
 			# Dictionary({term_1: [df, {docID_1: tf_1, docID_2: tf_2, ...}],
 			# 			  term_2: [df, {docID_1: tf_1, docID_2: tf_2, ...}],
 			# 			  ...})
+			#
+			# The term refrequency will be 1 for each document because we assume
+			# that we will only see one occurence of a keyword per document.
 			invertedIndex[token] = []
 			invertedIndex[token].append(1) # document frequency
 			invertedIndex[token].append({}) # empty dictionary for the actual	
@@ -168,7 +174,8 @@ if __name__ == '__main__':
 	for tweet in listOfTweets:
 		results = TextBlob(tweet["tokens"]) # CHECK FIELD FOR TWEET TOKENS !!!!!!!!!!!!!!!!!!!!!!!!!!
 		if (results.sentiment[0] > 0) and (not (results.sentiment[0] < 0)):
-       		print(retrieveMovies(tweet, invertedIndex))
+			print("HERE")
+       		# print(retrieveMovies(tweet, invertedIndex))
 
 
 
