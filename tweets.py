@@ -1,13 +1,8 @@
-import os, json, re, string
-import arrow
+import os
+import json
 
 from nltk.tokenize import TweetTokenizer, MWETokenizer
 import nltk.corpus as corpus
-
-import tweepy
-from tweepy import OAuthHandler
-
-from tweet_parser import parseTweetBasic, parseUserBasic
 
 # Twitter Tokenizer
 tweettk = TweetTokenizer()
@@ -22,40 +17,8 @@ for title in movie_titles:
 
 stop_words = set(corpus.stopwords.words('english'))
 
-
-# curtis1227 keys
-consumer_key = '60MxomUk4bQx0nkbZFLPTzIFb'
-consumer_secret = 'lBI2OB8MwEDi7s2tfUQhXabce5OghaIIwcbuQCc96n1D2DyCIV'
-access_token = '206919333-Vi6LOg1NcWgEJKaYnbzb54XzwCeKir4tSZfjnlka'
-access_secret = 'McFpqARFMKYQZY9g85BRiQKUP72722PIciiMIwedK0HXZ'
-
-auth = OAuthHandler(consumer_key, consumer_secret)
-auth.set_access_token(access_token, access_secret)
-api = tweepy.API(auth, wait_on_rate_limit=True)
-
 tweets_folder_name = 'tweets/'
 tokenized_tweets_folder_name = 'tokenized_tweets/'
-
-def retrieveTweets():
-    """
-    Retrieve tweets from Twitter.
-    """
-    tweets = []
-    # Maybe use random words for query?
-    query = 'movie'
-    limit = 250
-
-    for tweet in tweepy.Cursor(api.search, q=query, result_type='recent').items(limit):
-        processed_tweet = parseTweetBasic(tweet._json)
-        tweets.append(processed_tweet)
-
-    local = arrow.now('US/Eastern')
-    local = local.format('YYYY-MM-DD-HH-mm')
-
-    with open(os.path.join(tweets_folder_name, 'tweets{}.json'.format(local)), 'w') as file:
-        json.dump(tweets, file, indent=2)
-
-    return tweets
 
 def tokenizeTweets(tweets):
     for tweet in tweets:
@@ -65,8 +28,6 @@ def tokenizeTweets(tweets):
         tweet['text'] = text
     return tweets
 
-# Retrieve more tweets
-# retrieveTweets()
 
 # ALL_tweets is not a list of tweets like before.
 # Rather, it is a dictionary of tweets with tweet['id_str'] as keys.
