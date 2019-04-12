@@ -8,10 +8,9 @@
 
 import requests
 import time
-import os, sys # debugging
+import os, sys
 import json
 
-time_start = time.time()
 # list of json
 # {"id": id, "name": name, "genre_list": [genres], "keyword_list": [keywords]}
 movie_json_list = [] 
@@ -29,7 +28,6 @@ it = 0
 def get_keywords(movie_id):
 	global API_KEY, it
 	it += 1
-	print(str(it) + " " + str(movie_id))
 	KEYWORD_URL = "https://api.themoviedb.org/3/movie/" + str(movie_id) + "/keywords"
 	KEYWORD_PARAM = {"api_key" : API_KEY}
 	keyword_data = request_and_process(KEYWORD_URL, KEYWORD_PARAM)
@@ -102,15 +100,9 @@ for year in range(2008, 2019): #TODO: change years
 		add_movie_data(results)
 
 # get keywords 
-print('Printing Movies')
-print(len(movie_json_list))
-print(movie_json_list)
 
 with open(os.getcwd()+'/movies.json', 'w+') as outfile:  
     json.dump(movie_json_list, outfile)
-
-time_end = time.time()
-print(time_end-time_start)
 
 
 

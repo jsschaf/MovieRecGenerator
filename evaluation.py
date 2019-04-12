@@ -11,12 +11,14 @@ NOTE: This program runs with Python 3.7.
 
 
 import collections
-import movies # Python library containing movie keyword identification 
-			  # and preprocessing.
-
-import tweets # Python library containing preprocessed Twitter data.
+import json
+import os
 
 from math import log10, sqrt
+from textblob import TextBlob
+# To use the TextBlob library on CAEN, we will need to run the following 
+# command:
+# `pip install --user textblob`.
 
 
 def indexMovies(movie, invertedIndex): 
@@ -26,11 +28,14 @@ def indexMovies(movie, invertedIndex):
 			input).
 	"""
 
-	# TODO: ADD MOVIEID INFO HERE 
-	# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	# Get ID for movie.
+	movieID = movie['id']
 
-	# Find term frequency of each token in movie tokens list.
-	termFreq = collections.Counter(movie)
+	# Find term frequency of each token in movie tokens list. The tokens list
+	# contains both the genre and keyword lists.
+	for genre in movie['genre_list']:
+		movie['keyword_list'].append(genre)
+	termFreq = collections.Counter(movie['keyword_list'])
 	termFreq = dict(termFreq)
 
 	# Add all tokens and term frequencies to invertedIndex, updating the inverted
@@ -48,6 +53,9 @@ def indexMovies(movie, invertedIndex):
 			# Dictionary({term_1: [df, {docID_1: tf_1, docID_2: tf_2, ...}],
 			# 			  term_2: [df, {docID_1: tf_1, docID_2: tf_2, ...}],
 			# 			  ...})
+			#
+			# The term refrequency will be 1 for each document because we assume
+			# that we will only see one occurence of a keyword per document.
 			invertedIndex[token] = []
 			invertedIndex[token].append(1) # document frequency
 			invertedIndex[token].append({}) # empty dictionary for the actual	
@@ -131,6 +139,43 @@ def retrieveMovies(tweet, invertedIndex):
 		retrieved[doc] = numerator / (denominatorDoc * denominatorQuery)
 	return retrieved
 
+
+if __name__ == '__main__':
+
+	# Open JSON file containing a list of tweets.
+	#
+	# listOfTweets is a dictionary-based format of the tweets that we will be
+	# using to suggest movies for.
+	tweetsFile = open(os.getcwd() + "/tweets.json", 'r')
+	tweetsContents = tweetsFile.read()
+	listOfTweets = json.loads(tweetsContents)
+
+	# Open JSON file containing a list of movies and their corresponding
+	# keywords.
+	moviesFile = open(os.getcwd() + "/movies.json", 'r')
+	moviesContents = moviesFile.read()
+	listOfMovies = json.loads(moviesContents)
+
+	# Put movie information into inverted index.
+	invertedIndex = {}
+	for movie in listOfMovies:
+		indexMovies(movie, invertedIndex)
+
+	# Because some Twitter users may express negative opinions about certain
+	# movies/topics, it would not be reasonable to make movie suggestions
+	# based on these types of opinions. This is because we do not know 
+	# what the user will like in terms of movies, only the types of movies
+	# that he or she does not like. Furthermore, suggesting an "opposite" to
+	# a given movie topic is not really realistic because there is no real
+	# definitive opposite to, say, action/adventure movies.
+	#
+	# We use sentiment analysis to filter out the negative tweets and only 
+	# use positive and neutral tweets for training and testing.
+	for tweet in listOfTweets:
+		results = TextBlob(tweet["tokens"]) # CHECK FIELD FOR TWEET TOKENS !!!!!!!!!!!!!!!!!!!!!!!!!!
+		if (results.sentiment[0] > 0) and (not (results.sentiment[0] < 0)):
+			print("HERE")
+       		# print(retrieveMovies(tweet, invertedIndex))
 
 
 
