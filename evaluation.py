@@ -146,7 +146,7 @@ if __name__ == '__main__':
 	#
 	# listOfTweets is a dictionary-based format of the tweets that we will be
 	# using to suggest movies for.
-	tweetsFile = open(os.getcwd() + "/tweets.json", 'r')
+	tweetsFile = open(os.getcwd() + "/tokenized_tweets/ALL_tweets.json", 'r')
 	tweetsContents = tweetsFile.read()
 	listOfTweets = json.loads(tweetsContents)
 
@@ -171,11 +171,19 @@ if __name__ == '__main__':
 	#
 	# We use sentiment analysis to filter out the negative tweets and only 
 	# use positive and neutral tweets for training and testing.
-	for tweet in listOfTweets:
-		results = TextBlob(tweet["tokens"]) # CHECK FIELD FOR TWEET TOKENS !!!!!!!!!!!!!!!!!!!!!!!!!!
+	for key, value in listOfTweets.items():
+
+		# TextBlob only recognises sentiment analysis on sentences. We will have
+		# to compose the sentence together first, assuming that the tokens 
+		# found in the text are in the original order.
+		sentence = ""
+		for word in value["text"]:
+			sentence += word
+			sentence += " "
+		results = TextBlob(sentence) 
 		if (results.sentiment[0] > 0) and (not (results.sentiment[0] < 0)):
-			print("HERE")
-       		# print(retrieveMovies(tweet, invertedIndex))
+			print(value["id"])
+			print(retrieveMovies(value["text"], invertedIndex))
 
 
 
