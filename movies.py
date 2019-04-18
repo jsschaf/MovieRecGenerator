@@ -86,23 +86,27 @@ def add_movie_data(json_data):
 									"genre_list": genre_list, "keyword_list": keywords_list})
 
 
-for year in range(2008, 2019): #TODO: change years 
-	PARAMS = {"api_key" : API_KEY, "vote_average.gte": 6, "year": year, "without_genres": WITHOUT_GENRES, "vote_count.gte": 100}
-	data = request_and_process(URL, PARAMS)
-	results = data['results']
-	add_movie_data(results)
-	# get next json data
-	total_pages = data["total_pages"]
-	for page in range(2, total_pages):
-		PAGE_PARAMS = {"api_key": API_KEY, "page": page,"vote_average.gte": 6, "year": year, "without_genres": WITHOUT_GENRES, "vote_count.gte": 100}
-		data = request_and_process(URL, PAGE_PARAMS)
+if __name__ == '__main__':
+	tot_movies = 0
+	for year in range(2008, 2020): #TODO: change years 
+		PARAMS = {"api_key" : API_KEY, "vote_average.gte": 5, "primary_release_year": year, "without_genres": WITHOUT_GENRES, "vote_count.gte": 20, "with_original_language": "en"}
+		data = request_and_process(URL, PARAMS)
 		results = data['results']
 		add_movie_data(results)
+		print("year: " + str(year) + " total moives: " + str(data["total_results"]))
+		tot_movies += data["total_results"]
+		print("cumultaive result: " + str(tot_movies))
+		# get next json data
+		total_pages = data["total_pages"]
+		for page in range(2, total_pages):
+			PAGE_PARAMS = {"api_key": API_KEY, "page": page,"vote_average.gte": 5, "primary_release_year": year, "without_genres": WITHOUT_GENRES, "vote_count.gte": 20, "with_original_language": "en"}
+			data = request_and_process(URL, PAGE_PARAMS)
+			results = data['results']
+			add_movie_data(results)
 
-# get keywords 
-
-with open(os.getcwd()+'/movies.json', 'w+') as outfile:  
-    json.dump(movie_json_list, outfile)
+	print(len(movie_json_list))
+	with open(os.getcwd()+'/movies.json', 'w+') as outfile:  
+	    json.dump(movie_json_list, outfile)
 
 
 

@@ -35,6 +35,7 @@ def tokenizeTweets(tweets):
         text = tweettk.tokenize(text)
         text = mwetk.tokenize(text)
         text = [token for token in text if token not in stop_words]
+        tweet['original_text'] = tweet['text']
         tweet['text'] = text
     return tweets
 

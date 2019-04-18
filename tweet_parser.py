@@ -47,6 +47,7 @@ def parseUserBasic(u):
 
 def parseTweetBasic(s):
     new_s = { key: s[key] for key in [
+        'created_at',
         'id',
         'id_str',
         # 'entities',

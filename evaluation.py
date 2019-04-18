@@ -12,13 +12,33 @@ NOTE: This program runs with Python 3.7.
 
 import collections
 import json
+import operator
 import os
 
 from math import log10, sqrt
+from porterstemmer import *
 from textblob import TextBlob
 # To use the TextBlob library on CAEN, we will need to run the following 
 # command:
 # `pip install --user textblob`.
+
+
+def stemWords(tokensList):
+	"""
+	Stem the words found in the tokensList input.
+	Return: list of (stemmed) tokens
+	"""
+
+	# Use the Porter Stemmer implementation from porterstemmer.py based off of
+	# the implementation found here: 
+	# http://tartarus.org/~martin/PorterStemmer/python.txt
+	stemmer = PorterStemmer()
+
+	# Iterate through individual tokens and stem each one according to the
+	# already implemented Porter Stemmer class.
+	for idx in range(0, len(tokensList)):
+		tokensList[idx] = stemmer.stem(tokensList[idx], 0, len(tokensList[idx]) - 1)
+	return tokensList
 
 
 def indexMovies(movie, invertedIndex): 
@@ -28,14 +48,26 @@ def indexMovies(movie, invertedIndex):
 			input).
 	"""
 
+	finalMovieTokens = []
+
 	# Get ID for movie.
 	movieID = movie['id']
 
 	# Find term frequency of each token in movie tokens list. The tokens list
 	# contains both the genre and keyword lists.
 	for genre in movie['genre_list']:
-		movie['keyword_list'].append(genre)
-	termFreq = collections.Counter(movie['keyword_list'])
+		if genre != "movie":
+			genre = genre.lower()
+			finalMovieTokens.append(genre)
+	for keyword in movie['keyword_list']:
+		if (keyword != "movie") and (keyword != "with"):
+			keyword = keyword.lower()
+			finalMovieTokens.append(keyword)
+
+	# Also include name of movie in list of tokens.
+	finalMovieTokens.append(movie['name'])
+	finalMovieTokens = stemWords(finalMovieTokens)
+	termFreq = collections.Counter(finalMovieTokens)
 	termFreq = dict(termFreq)
 
 	# Add all tokens and term frequencies to invertedIndex, updating the inverted
@@ -89,6 +121,7 @@ def retrieveMovies(tweet, invertedIndex):
 	# 			  ...)
 	# tf-idf (the value of each token) is the weight given the weighting 
 	# scheme passed in.
+	tweet = stemWords(tweet)
 	termFreq = collections.Counter(tweet)
 	termFreq = dict(termFreq)
 	retrieved = {}
@@ -171,6 +204,7 @@ if __name__ == '__main__':
 	#
 	# We use sentiment analysis to filter out the negative tweets and only 
 	# use positive and neutral tweets for training and testing.
+	collected_results = {}
 	for key, value in listOfTweets.items():
 
 		# TextBlob only recognises sentiment analysis on sentences. We will have
@@ -181,9 +215,19 @@ if __name__ == '__main__':
 			sentence += word
 			sentence += " "
 		results = TextBlob(sentence) 
-		if (results.sentiment[0] > 0) and (not (results.sentiment[0] < 0)):
-			print(value["id"])
-			print(retrieveMovies(value["text"], invertedIndex))
+		if (results.sentiment[0] > 0) or (not (results.sentiment[0] < 0)):
+			collected_results[value["original_text"]] = []
+			listOfDocs = retrieveMovies(value["text"], invertedIndex)
+			sorted_listOfDocs = sorted(listOfDocs.items(), \
+				key=operator.itemgetter(1), reverse=True)
+			if len(sorted_listOfDocs) > 5:
+				for i in range(5):
+					collected_results[value["original_text"]].append(sorted_listOfDocs[i])
+			else:
+				for i in sorted_listOfDocs:
+					collected_results[value["original_text"]].append(i)
+	print(collected_results)
+
 
 
 
