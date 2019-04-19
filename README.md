@@ -33,8 +33,8 @@ In addition, a compilation of all the tokens is generated and stored in a file i
 3. tweets.py --> Preprocesses tweets to generate a list of tokens
 4. movies.py --> Gets movies from themoviedb (ID, name, genre, keyword, rating) to generate a list of keywords (filters out low ratings, at least 5/10, with at least 100 votes)
 5. evaluation.py
-  - docs = list of tokens from movies (one for each movie)
-  - query = tokens from tweets
-  - Performs tf-idf weighting and uses cosine similarity to match it up.
-  - Also performs sentiment analysis to filter out negative sentiment.
-  - Generates top 5 movies from greatest to least similarity based on a tweet.
+   - docs = list of tokens from movies (one for each movie)
+   - query = tokens from tweets
+   - Performs tf-idf weighting and uses cosine similarity to match it up.
+   - Also performs sentiment analysis to filter out negative sentiment.
+   - Generates top 5 movies from greatest to least similarity based on a tweet.
