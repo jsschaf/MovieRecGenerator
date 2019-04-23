@@ -36,7 +36,7 @@ python3 movies.py
 ```
 Ensure that the environment is using Python 3.7, otherwise 'requests' python library will not be included.
 
-Retrieves list of movies and their id, title, genres, keyword lists and stores those information into movies.json
+Retrieves list of movies and their id, title, genres, keyword lists and stores those information into movies.json.
 
 JSON format: [{"id": movie id, "name": movie title, "genre_list": list of genres, "keyword_list": list of keywords}]
 
@@ -63,11 +63,11 @@ To learn what the actual movie is, you will need to find the corresponding movie
 3. tweets.py --> Preprocesses tweets to generate a list of tokens
 4. movies.py --> Gets movies from themoviedb (ID, name, genre, keyword, rating) to generate a list of keywords (filters out low ratings, at least 5/10, with at least 100 votes)
 5. evaluation.py
-   - docs = list of tokens from movies (one for each movie)
-   - query = tokens from tweets
-   - Performs tf-idf weighting and uses cosine similarity to match it up.
-   - Also performs sentiment analysis to filter out negative sentiment.
-   - Generates top 5 movies from greatest to least similarity based on a tweet.
+   - Docs = list of tokens from movies (one for each movie)
+   - Query = tokens from tweets
+   - Performs tf-idf weighting and uses cosine similarity to match it up
+   - Also performs sentiment analysis to filter out negative sentiment
+   - Generates top 5 movies from greatest to least similarity based on a tweet
 6. movies.json --> JSON format file of the list of 951 movies we use in our recommendation system
-7. ALL_tweets.json --> File is found in "tokenized tweets" folder; contains a parsed list of tweets that we will be using to process and suggest movies to.
-8. porterstemmer.py --> Implementation of Porter Stemmer for use as a stemmer when preprocessing Twitter and movie data.
+7. ALL_tweets.json --> File is found in tokenized_tweets/ folder; JSON format file that contains a parsed list of tweets that we will be using to process and suggest movies to
+8. porterstemmer.py --> Implementation of Porter Stemmer for use as a stemmer when preprocessing Twitter and movie data
