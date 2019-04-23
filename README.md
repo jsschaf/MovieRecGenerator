@@ -30,7 +30,13 @@ In addition, a compilation of all the tokens is generated and stored in a file i
 
 ### Collecting Movie Data
 
-TODO
+Collecting Movie Data:
+```
+python3 movies.py
+```
+Ensure that the environment is using Python 3.7, otherwise 'requests' python library will not be included
+Retrieves list of movies and their id, title, genres, keyword lists and stores those information into movies.json
+JSON format: [{"id": movie id, "name": movie title, "genre_list": list of genres, "keyword_list": list of keywords}]
 
 ### Suggesting Movies to Tweets
 
