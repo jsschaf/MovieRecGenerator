@@ -48,6 +48,10 @@ python evaluation.py
 ```
 Ensure that the environment is using Python 3.7, otherwise some libraries will not be included (i.e. textblob).
 
+Partial preprocessing is done to each tweet, primarily removing stopwords and stemming. The movies have been already provided a list of keywords that succinctly describe each movie.
+
+When implementing the TF-IDF vector space model, the "query" is the individual tweets and the "documents" are the movies and their associated keywords. Cosine similarity scores are used to determine which movies to suggest for a given user's tweet.
+
 The printed result is a dictionary of the original tweets to their corresponding suggested movie IDs and its TF-IDF-based cosine similarity scores.
 
 To learn what the actual movie is, you will need to find the corresponding movie with that ID in movies.json.
@@ -64,3 +68,6 @@ To learn what the actual movie is, you will need to find the corresponding movie
    - Performs tf-idf weighting and uses cosine similarity to match it up.
    - Also performs sentiment analysis to filter out negative sentiment.
    - Generates top 5 movies from greatest to least similarity based on a tweet.
+6. movies.json --> JSON format file of the list of 951 movies we use in our recommendation system
+7. ALL_tweets.json --> File is found in "tokenized tweets" folder; contains a parsed list of tweets that we will be using to process and suggest movies to.
+8. porterstemmer.py --> Implementation of Porter Stemmer for use as a stemmer when preprocessing Twitter and movie data.
