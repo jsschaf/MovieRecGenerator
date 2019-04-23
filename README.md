@@ -3,6 +3,8 @@
 
 ## Usage
 
+### Collecting Twitter Data
+
 Setting up a virtual environment: (You'll need to install virtualenv)
 ```
 python3 -m virtualenv env
@@ -25,6 +27,22 @@ python tweets.py
 Processes and tokenizes tweets retrieved in the tweets/ folder and stores the resulting tokens in a folder named tokenized_tweets/ in the same filename format.
 
 In addition, a compilation of all the tokens is generated and stored in a file in the same folder called ALL_tweets.json.
+
+### Collecting Movie Data
+
+TODO
+
+### Suggesting Movies to Tweets
+
+Running the Python evaluation script:
+```
+python evaluation.py
+```
+Ensure that the environment is using Python 3.7, otherwise some libraries will not be included (i.e. textblob).
+
+The printed result is a dictionary of the original tweets to their corresponding suggested movie IDs and its TF-IDF-based cosine similarity scores.
+
+To learn what the actual movie is, you will need to find the corresponding movie with that ID in movies.json.
 
 ## File Explanations
 
